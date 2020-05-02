@@ -50,9 +50,10 @@
     var ballRadius = 10;
 
     // pause/play button
-    var button = [];
-    button.status = 0;
-    button.text = "⏸️";
+    var button = {
+      status: 0,
+      text: "⏸️"
+    };
 
     // define the function that will draw the ball initially:
     function drawBall() {
