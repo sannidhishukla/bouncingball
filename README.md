@@ -2,7 +2,7 @@
 
 ## Making updates to the MDN bouncing balls JS tutorial
 
-Exercise 1 Make a button to pause and restart ball movement.
+Exercise 1: Make a button to pause and restart ball movement.
 
 Exercise 2: Add a button to add new balls to the field with random direction of movement and random color (don't worry about collision between the balls).
 
