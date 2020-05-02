@@ -5,7 +5,7 @@
   <meta charset="utf-8" />
 
   <title>
-    Gamedev Canvas Workshop
+    Pausing and Resuming Ball Movement
   </title>
 
   <style>
@@ -40,11 +40,19 @@
     var ballY = canvas.height - 30;
 
     // defining the increments by which the x and y position of the ball will change
-    var dx = 2;
-    var dy = -2;
+    var dxPlay = 2
+    var dyPlay = -2
+
+    var dx = dxPlay;
+    var dy = dyPlay;
 
     // defining the ball's radius
     var ballRadius = 10;
+
+    // pause/play button
+    var button = [];
+    button.status = 0;
+    button.text = "⏸️";
 
     // define the function that will draw the ball initially:
     function drawBall() {
@@ -62,30 +70,58 @@
       ctx.closePath();
     }
 
+    function drawButton() {
+      ctx.font = "30px Arial";
+      ctx.fillText(button.text, 40, 60);
+    }
+
     // define the function that will update the canvas:
     function draw() {
       // clear the canvas before redrawing
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+      // draw the play/pause button
+      drawButton();
       // draw the ball
       drawBall();
       // update the ball's x and y position
       ballX += dx;
       ballY += dy;
 
-      // making sure that balls bounce off the top, left, and right walls,
-      // that the ball is able to bounce off the paddle, and
-      // that a "GAME OVER" alert is sent when a ball leaves through the
-      // bottom of the screen.
-      if (ballY + dy < ballRadius || ballY + dy > (canvas.height - ballRadius)) {
-        dy = -dy;
+      // making sure that balls bounce off the walls.
+      if (button.status === 0) {
+        if (ballY + dy < ballRadius || ballY + dy > (canvas.height - ballRadius)) {
+          dyPlay = -dyPlay;
+          dy = dyPlay;
+        }
+        if (ballX + dx < ballRadius || ballX + dx > (canvas.width - ballRadius))  {
+          dxPlay = -dxPlay;
+          dx = dxPlay;
+        }
       }
-      if (ballX + dx < ballRadius || ballX + dx > (canvas.width - ballRadius))  {
-        dx = -dx;
-      }
+
+      // smooth ball moving animation
       requestAnimationFrame(draw);
     }
 
     draw();
+
+    // setting an event listener
+    document.addEventListener("click", changeBallMovement);
+
+    // function to pause and restart ball Movement
+    function changeBallMovement(e) {
+      if (button.status === 0) {
+        button.status = 1;
+        button.text = "▶️"
+        dx = 0;
+        dy = 0;
+      } else {
+        button.status = 0;
+        button.text = "⏸️";
+        dx = dxPlay;
+        dy = dyPlay;
+      }
+    }
 
   </script>
 
