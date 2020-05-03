@@ -5,7 +5,7 @@
   <!-- tells the browser to use the utf-8 character encoding -->
   <meta charset="utf-8" />
 
-  <title> Pausing and Resuming Ball Movement </title>
+  <title> Ball Exercises </title>
   <link rel="stylesheet" type="text/css" href="assets/css/style.css">
 
 </head>
@@ -14,7 +14,7 @@
 
 <!-- setting up the canvas, describing its size -->
 <canvas id="myCanvas" width="480" height="320"></canvas>
-<button id="button" onclick="changeBallMovement()">⏸️‍</button>
+<button id="pauseButton" class="button" onclick="changeBallMovement()">⏸️‍</button>
 
 <script>
     // storing a reference to the canvas element under the name "canvas"
@@ -84,11 +84,11 @@
     function changeBallMovement() {
       if (isDrawingLoopPaused) {
         isDrawingLoopPaused = false;
-        document.getElementById("button").innerHTML = "⏸️";
+        document.getElementById("pauseButton").innerHTML = "⏸️";
 
       } else {
         isDrawingLoopPaused = true;
-        document.getElementById("button").innerHTML = "▶️";
+        document.getElementById("pauseButton").innerHTML = "▶️";
       }
     }
 
