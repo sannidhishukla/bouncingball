@@ -1,19 +1,22 @@
-body {
-  padding: 0;
-  margin: 0;
- }
-
- #myCanvas {
+#myCanvas {
    background: #eee;
    display: block;
    margin: 0 auto;
- }
+}
 
- .button {
+.button {
+  width: 100px;
+  height: 100px;
+  text-align: center;
+  border-radius: 100px;
+  border: 2px solid #000000;
   display: block;
-  font-size: 100px;
-  background-color: white;
-  border: none;
+  font-size: 50px;
   margin: 0 auto;
-  margin-top: 30px;
- }
+  transition-duration: .5s;
+}
+
+.button:hover {
+   background-color: black;
+   transition-duration: .5s;
+}
