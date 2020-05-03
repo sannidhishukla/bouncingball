@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <!-- tells the browser to use the utf-8 character encoding -->
   <meta charset="utf-8" />
 
   <title>
-    Add New Balls
+    Pausing and Resuming Ball Movement
   </title>
 
   <style>
@@ -13,6 +14,7 @@
     padding: 0;
     margin: 0;
    }
+
    canvas {
      background: #eee;
      display: block;
@@ -20,33 +22,26 @@
    }
 
    .button {
-    width: 100px;
-    height: 100px;
-    text-align: center;
-   	border-radius: 100px;
-   	border: 2px solid #000000;
-   	display: block;
-   	font-size: 50px;
+    display: block;
+    font-size: 100px;
+    background-color: white;
+    border: none;
     margin: 0 auto;
+    margin-top: 30px;
     transition-duration: .5s;
    }
 
-   .button:hover {
-     background-color: black;
-     transition-duration: .5s;
-   }
   </style>
 
 </head>
 
 <body>
 
-  <!-- setting up the canvas, describing its size -->
-  <canvas id="myCanvas" width="480" height="320">
-  </canvas>
-  <button class="button" onclick="addBall()">🤹🏾‍</button>
+<!-- setting up the canvas, describing its size -->
+<canvas id="myCanvas" width="480" height="320"></canvas>
+<button class="button" onclick="changeBallMovement()">⏯‍</button>
 
-  <script>
+<script>
     // storing a reference to the canvas element under the name "canvas"
     var canvas = document.getElementById("myCanvas");
 
@@ -54,28 +49,22 @@
     // this is what will actually "paint" on the "canvas"
     var ctx = canvas.getContext("2d");
 
-    var balls = [];
+    // starting x and y position of the ball on the canvas
+    var ballX = canvas.width/2;
+    var ballY = canvas.height - 30;
 
-    // defining the balls' radius
+    // defining the increments by which the x and y position of the ball will change
+    var dx = 2;
+    var dy = -2;
+
+    // defining the ball's radius
     var ballRadius = 10;
 
-    // initial ball count
-    var ballCount = 0;
-
-    function addBall() {
-      ballCount += 1;
-      var ball = {
-        color: '#'+Math.floor(Math.random()*16777215).toString(16),
-        dyBall: -5,
-        dxBall: 5,
-        ballX: Math.floor(Math.random() * 10) * Math.floor(Math.random() * 10) + 10,
-        ballY: Math.floor(Math.random() * 10) * Math.floor(Math.random() * 10) + 10,
-      };
-      balls.push(ball);
-    }
+    // pause/play button
+    var isDrawingLoopPaused = false;
 
     // define the function that will draw the ball initially:
-    function drawBall(ballColor, ballX, ballY) {
+    function drawBall() {
       // begin the instructions for drawing the ball
       ctx.beginPath();
       // (x, y) coordinates for the circle's center,
@@ -83,7 +72,7 @@
       // direction to draw the circle in ("false" indicates clockwise)
       ctx.arc(ballX,ballY,ballRadius,0,Math.PI*2,false);
       // define the ball's color
-      ctx.fillStyle = ballColor;
+      ctx.fillStyle = "#0095DD";
       // define the circle's fill pattern
       ctx.fill();
       // end of instructions for drawing the circle
@@ -94,23 +83,20 @@
     function draw() {
       // clear the canvas before redrawing
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      // draw the balls
+      // draw the ball
+      drawBall();
+      // update the ball's x and y position
+      if (!isDrawingLoopPaused) {
+        ballX += dx;
+        ballY += dy;
+      }
 
-      for (var index in balls) {
-
-        var ball = balls[index];
-
-        drawBall(ball.color, ball.ballX, ball.ballY);
-
-        ball.ballX += ball.dxBall;
-        ball.ballY += ball.dyBall;
-
-        if (ball.ballY + ball.dyBall < ballRadius || ball.ballY + ball.dyBall > (canvas.height - ballRadius)) {
-          ball.dyBall = -ball.dyBall;
-        }
-        if (ball.ballX + ball.dxBall < ballRadius || ball.ballX + ball.dxBall > (canvas.width - ballRadius))  {
-          ball.dxBall = -ball.dxBall;
-        }
+      // making sure that balls bounce off the walls.
+      if (ballY + dy < ballRadius || ballY + dy > (canvas.height - ballRadius)) {
+        dy = -dy;
+      }
+      if (ballX + dx < ballRadius || ballX + dx > (canvas.width - ballRadius))  {
+        dx = -dx;
       }
 
       // smooth ball moving animation
@@ -118,6 +104,15 @@
     }
 
     draw();
+
+    // function to pause and restart ball Movement
+    function changeBallMovement() {
+      if (isDrawingLoopPaused) {
+        isDrawingLoopPaused = false;
+      } else {
+        isDrawingLoopPaused = true;
+      }
+    }
 
   </script>
 
