@@ -84,11 +84,11 @@
     function changeBallMovement() {
       if (isDrawingLoopPaused) {
         isDrawingLoopPaused = false;
-        document.getElementById("pauseButton").innerHTML = "⏸️";
+        document.getElementById("pauseButton").textContent = "⏸️";
 
       } else {
         isDrawingLoopPaused = true;
-        document.getElementById("pauseButton").innerHTML = "▶️";
+        document.getElementById("pauseButton").textContent = "▶️";
       }
     }
 
