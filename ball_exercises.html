@@ -1,24 +1,27 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <!-- tells the browser to use the utf-8 character encoding -->
   <meta charset="utf-8" />
   <link rel="stylesheet" type="text/css" href="assets/css/style.css"/>
 
-  <title>
-    Add New Balls
-  </title>
+
+  <title> Ball Exercises </title>
+  <link rel="stylesheet" type="text/css" href="assets/css/style.css">
 
 </head>
 
 <body>
 
-  <!-- setting up the canvas, describing its size -->
-  <canvas id="myCanvas" width="480" height="320">
-  </canvas>
-  <button class="button" onclick="addBall()">🤹🏾‍</button>
 
-  <script>
+<!-- setting up the canvas, describing its size -->
+<canvas id="myCanvas" width="480" height="320"></canvas>
+<button id="pauseButton" class="button" onclick="changeBallMovement()">⏸️‍</button>
+<button class="button" onclick="addBall()">🤹🏾‍</button>
+
+
+<script>
     // storing a reference to the canvas element under the name "canvas"
     var canvas = document.getElementById("myCanvas");
 
@@ -30,6 +33,10 @@
 
     // defining the balls' radius
     var ballRadius = 10;
+
+
+    // pause/play button
+    var isDrawingLoopPaused = false;
 
     // function to draw a ball
     function drawBall(color, x, y) {
@@ -59,7 +66,6 @@
       balls.push(ball);
     }
 
-
     // define the function that will update the canvas:
     function draw() {
       // clear the canvas before redrawing
@@ -69,8 +75,10 @@
       balls.forEach(function(ball) {
         drawBall(ball.color, ball.x, ball.y);
 
-        ball.x += ball.dx;
-        ball.y += ball.dy;
+        if (!isDrawingLoopPaused) {
+          ball.x += ball.dx;
+          ball.y += ball.dy;
+        }
 
         if (ball.y + ball.dy < ballRadius || ball.y + ball.dy > (canvas.height - ballRadius)) {
           ball.dy = -ball.dy;
@@ -86,6 +94,17 @@
 
     draw();
 
+    // function to pause and restart ball Movement
+    function changeBallMovement() {
+      if (isDrawingLoopPaused) {
+        isDrawingLoopPaused = false;
+        document.getElementById("pauseButton").textContent = "⏸️";
+
+      } else {
+        isDrawingLoopPaused = true;
+        document.getElementById("pauseButton").textContent = "▶️";
+      }
+    }
   </script>
 
 </body>

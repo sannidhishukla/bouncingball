@@ -2,9 +2,9 @@
    background: #eee;
    display: block;
    margin: 0 auto;
- }
+}
 
- .button {
+.button {
   width: 100px;
   height: 100px;
   text-align: center;
@@ -14,9 +14,9 @@
   font-size: 50px;
   margin: 0 auto;
   transition-duration: .5s;
- }
+}
 
- .button:hover {
+.button:hover {
    background-color: black;
    transition-duration: .5s;
- }
+}
