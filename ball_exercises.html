@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <!-- tells the browser to use the utf-8 character encoding -->
   <meta charset="utf-8" />
@@ -9,25 +10,38 @@
   </title>
 
   <style>
-  2* {
+  * {
     padding: 0;
     margin: 0;
    }
+
    canvas {
      background: #eee;
      display: block;
      margin: 0 auto;
    }
+
+   .button {
+    display: block;
+    font-size: 100px;
+    background-color: white;
+    border: none;
+    margin: 0 auto;
+    margin-top: 30px;
+    transition-duration: .5s;
+   }
+
   </style>
 
 </head>
 
 <body>
 
-  <!-- setting up the canvas, describing its size -->
-  <canvas id="myCanvas" width="480" height="320"></canvas>
+<!-- setting up the canvas, describing its size -->
+<canvas id="myCanvas" width="480" height="320"></canvas>
+<button class="button" onclick="changeBallMovement()">⏯‍</button>
 
-  <script>
+<script>
     // storing a reference to the canvas element under the name "canvas"
     var canvas = document.getElementById("myCanvas");
 
@@ -40,20 +54,14 @@
     var ballY = canvas.height - 30;
 
     // defining the increments by which the x and y position of the ball will change
-    var dxPlay = 2
-    var dyPlay = -2
-
-    var dx = dxPlay;
-    var dy = dyPlay;
+    var dx = 2;
+    var dy = -2;
 
     // defining the ball's radius
     var ballRadius = 10;
 
     // pause/play button
-    var button = {
-      status: 0,
-      text: "⏸️"
-    };
+    var isDrawingLoopPaused = false;
 
     // define the function that will draw the ball initially:
     function drawBall() {
@@ -71,33 +79,24 @@
       ctx.closePath();
     }
 
-    function drawButton() {
-      ctx.font = "30px Arial";
-      ctx.fillText(button.text, 40, 60);
-    }
-
     // define the function that will update the canvas:
     function draw() {
       // clear the canvas before redrawing
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      // draw the play/pause button
-      drawButton();
       // draw the ball
       drawBall();
       // update the ball's x and y position
-      ballX += dx;
-      ballY += dy;
+      if (!isDrawingLoopPaused) {
+        ballX += dx;
+        ballY += dy;
+      }
 
       // making sure that balls bounce off the walls.
-      if (button.status === 0) {
-        if (ballY + dy < ballRadius || ballY + dy > (canvas.height - ballRadius)) {
-          dyPlay = -dyPlay;
-          dy = dyPlay;
-        }
-        if (ballX + dx < ballRadius || ballX + dx > (canvas.width - ballRadius))  {
-          dxPlay = -dxPlay;
-          dx = dxPlay;
-        }
+      if (ballY + dy < ballRadius || ballY + dy > (canvas.height - ballRadius)) {
+        dy = -dy;
+      }
+      if (ballX + dx < ballRadius || ballX + dx > (canvas.width - ballRadius))  {
+        dx = -dx;
       }
 
       // smooth ball moving animation
@@ -106,21 +105,12 @@
 
     draw();
 
-    // setting an event listener
-    document.addEventListener("click", changeBallMovement);
-
     // function to pause and restart ball Movement
-    function changeBallMovement(e) {
-      if (button.status === 0) {
-        button.status = 1;
-        button.text = "▶️"
-        dx = 0;
-        dy = 0;
+    function changeBallMovement() {
+      if (isDrawingLoopPaused) {
+        isDrawingLoopPaused = false;
       } else {
-        button.status = 0;
-        button.text = "⏸️";
-        dx = dxPlay;
-        dy = dyPlay;
+        isDrawingLoopPaused = true;
       }
     }
 
