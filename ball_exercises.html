@@ -1,47 +1,24 @@
 <!DOCTYPE html>
 <html>
-
 <head>
   <!-- tells the browser to use the utf-8 character encoding -->
   <meta charset="utf-8" />
+  <link rel="stylesheet" type="text/css" href="assets/css/style.css"/>
 
   <title>
-    Pausing and Resuming Ball Movement
+    Add New Balls
   </title>
-
-  <style>
-  * {
-    padding: 0;
-    margin: 0;
-   }
-
-   canvas {
-     background: #eee;
-     display: block;
-     margin: 0 auto;
-   }
-
-   .button {
-    display: block;
-    font-size: 100px;
-    background-color: white;
-    border: none;
-    margin: 0 auto;
-    margin-top: 30px;
-    transition-duration: .5s;
-   }
-
-  </style>
 
 </head>
 
 <body>
 
-<!-- setting up the canvas, describing its size -->
-<canvas id="myCanvas" width="480" height="320"></canvas>
-<button class="button" onclick="changeBallMovement()">⏯‍</button>
+  <!-- setting up the canvas, describing its size -->
+  <canvas id="myCanvas" width="480" height="320">
+  </canvas>
+  <button class="button" onclick="addBall()">🤹🏾‍</button>
 
-<script>
+  <script>
     // storing a reference to the canvas element under the name "canvas"
     var canvas = document.getElementById("myCanvas");
 
@@ -49,70 +26,65 @@
     // this is what will actually "paint" on the "canvas"
     var ctx = canvas.getContext("2d");
 
-    // starting x and y position of the ball on the canvas
-    var ballX = canvas.width/2;
-    var ballY = canvas.height - 30;
+    var balls = [];
 
-    // defining the increments by which the x and y position of the ball will change
-    var dx = 2;
-    var dy = -2;
-
-    // defining the ball's radius
+    // defining the balls' radius
     var ballRadius = 10;
 
-    // pause/play button
-    var isDrawingLoopPaused = false;
-
-    // define the function that will draw the ball initially:
-    function drawBall() {
+    // function to draw a ball
+    function drawBall(color, x, y) {
       // begin the instructions for drawing the ball
       ctx.beginPath();
       // (x, y) coordinates for the circle's center,
       // arc radius, start and end angle (in radians),
       // direction to draw the circle in ("false" indicates clockwise)
-      ctx.arc(ballX,ballY,ballRadius,0,Math.PI*2,false);
+      ctx.arc(x,y,ballRadius,0,Math.PI*2,false);
       // define the ball's color
-      ctx.fillStyle = "#0095DD";
+      ctx.fillStyle = color;
       // define the circle's fill pattern
       ctx.fill();
       // end of instructions for drawing the circle
       ctx.closePath();
     }
 
+    // function to add new ball
+    function addBall() {
+      var ball = {
+        color: '#'+Math.floor(Math.random()*16777215).toString(16),
+        dx: 5,
+        dy: -5,
+        x: Math.floor(Math.random() * 10) * Math.floor(Math.random() * 10) + 10,
+        y: Math.floor(Math.random() * 10) * Math.floor(Math.random() * 10) + 10,
+      };
+      balls.push(ball);
+    }
+
+
     // define the function that will update the canvas:
     function draw() {
       // clear the canvas before redrawing
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      // draw the ball
-      drawBall();
-      // update the ball's x and y position
-      if (!isDrawingLoopPaused) {
-        ballX += dx;
-        ballY += dy;
-      }
 
-      // making sure that balls bounce off the walls.
-      if (ballY + dy < ballRadius || ballY + dy > (canvas.height - ballRadius)) {
-        dy = -dy;
-      }
-      if (ballX + dx < ballRadius || ballX + dx > (canvas.width - ballRadius))  {
-        dx = -dx;
-      }
+      // draw the balls]
+      balls.forEach(function(ball) {
+        drawBall(ball.color, ball.x, ball.y);
+
+        ball.x += ball.dx;
+        ball.y += ball.dy;
+
+        if (ball.y + ball.dy < ballRadius || ball.y + ball.dy > (canvas.height - ballRadius)) {
+          ball.dy = -ball.dy;
+        }
+        if (ball.x + ball.dx < ballRadius || ball.x + ball.dx > (canvas.width - ballRadius))  {
+          ball.dx = -ball.dx;
+        }
+      })
 
       // smooth ball moving animation
       requestAnimationFrame(draw);
     }
 
     draw();
-
-    // function to pause and restart ball Movement
-    function changeBallMovement() {
-      if (isDrawingLoopPaused) {
-        isDrawingLoopPaused = false;
-      } else {
-        isDrawingLoopPaused = true;
-      }
-    }
 
   </script>
 
