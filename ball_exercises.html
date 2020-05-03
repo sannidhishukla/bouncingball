@@ -20,6 +20,11 @@
 <button id="pauseButton" class="button" onclick="changeBallMovement()">⏸️‍</button>
 <button class="button" onclick="addBall()">🤹🏾‍</button>
 
+<div class="slideContainer">
+  <input type="range" min="1" max="10" value="5" class="slider" id="speedSlider">
+  <p>Speed: <span id="speed"></span></p>
+</div>
+
 
 <script>
     // storing a reference to the canvas element under the name "canvas"
@@ -34,6 +39,14 @@
     // defining the balls' radius
     var ballRadius = 10;
 
+    // defining the balls' initial speeds
+    var dxOrig = 5;
+    var dyOrig = -5;
+
+    // setting up the slider
+    var slider = document.getElementById("speedSlider");
+    var output = document.getElementById("speed");
+    output.innerHTML = slider.value;
 
     // pause/play button
     var isDrawingLoopPaused = false;
@@ -58,8 +71,8 @@
     function addBall() {
       var ball = {
         color: '#'+Math.floor(Math.random()*16777215).toString(16),
-        dx: 5,
-        dy: -5,
+        dx: dxOrig,
+        dy: dyOrig,
         x: Math.floor(Math.random() * 10) * Math.floor(Math.random() * 10) + 10,
         y: Math.floor(Math.random() * 10) * Math.floor(Math.random() * 10) + 10,
       };
@@ -105,6 +118,28 @@
         document.getElementById("pauseButton").textContent = "▶️";
       }
     }
+
+    slider.oninput = function() {
+      speed = this.value;
+      output.textContent = this.value;
+      // changing the speed of existing balls
+      balls.forEach(function(ball) {
+        if (ball.dx > 0) {
+          ball.dx = parseInt(speed);
+        } else {
+          ball.dx = -parseInt(speed);
+        }
+        if (ball.dy > 0) {
+          ball.dy = parseInt(speed);
+        } else {
+          ball.dy = -parseInt(speed);
+        }
+      })
+      // changing the speed of balls to be added later
+      dxOrig = parseInt(speed);
+      dyOrig = parseInt(speed);
+    }
+
   </script>
 
 </body>
