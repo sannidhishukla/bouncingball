@@ -5,33 +5,8 @@
   <!-- tells the browser to use the utf-8 character encoding -->
   <meta charset="utf-8" />
 
-  <title>
-    Pausing and Resuming Ball Movement
-  </title>
-
-  <style>
-  * {
-    padding: 0;
-    margin: 0;
-   }
-
-   canvas {
-     background: #eee;
-     display: block;
-     margin: 0 auto;
-   }
-
-   .button {
-    display: block;
-    font-size: 100px;
-    background-color: white;
-    border: none;
-    margin: 0 auto;
-    margin-top: 30px;
-    transition-duration: .5s;
-   }
-
-  </style>
+  <title> Pausing and Resuming Ball Movement </title>
+  <link rel="stylesheet" type="text/css" href="assets/css/style.css">
 
 </head>
 
@@ -39,7 +14,7 @@
 
 <!-- setting up the canvas, describing its size -->
 <canvas id="myCanvas" width="480" height="320"></canvas>
-<button class="button" onclick="changeBallMovement()">⏯‍</button>
+<button id="button" onclick="changeBallMovement()">⏸️‍</button>
 
 <script>
     // storing a reference to the canvas element under the name "canvas"
@@ -109,8 +84,11 @@
     function changeBallMovement() {
       if (isDrawingLoopPaused) {
         isDrawingLoopPaused = false;
+        document.getElementById("button").innerHTML = "⏸️";
+
       } else {
         isDrawingLoopPaused = true;
+        document.getElementById("button").innerHTML = "▶️";
       }
     }
 
