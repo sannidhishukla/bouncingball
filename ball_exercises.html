@@ -47,6 +47,7 @@
     var slider = document.getElementById("speedSlider");
     var output = document.getElementById("speed");
     output.innerHTML = slider.value;
+    slider.oninput = adjustBallSpeed;
 
     // pause/play button
     var isDrawingLoopPaused = false;
@@ -119,7 +120,7 @@
       }
     }
 
-    slider.oninput = function() {
+    function adjustBallSpeed() {
       speed = this.value;
       output.textContent = this.value;
       // changing the speed of existing balls
