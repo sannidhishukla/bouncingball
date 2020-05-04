@@ -1,3 +1,4 @@
+/* general styles */
 body {
 	color: #333;
 	font-family: 'Alegreya Sans SC', sans-serif;
@@ -21,6 +22,7 @@ p {
    border-right: 10px solid black;
 }
 
+/* styles for buttons */
 .buttonContainer {
   width: 480px;
   margin-left: 35%;
@@ -45,6 +47,7 @@ p {
    transition-duration: .5s;
 }
 
+/* styles for slider */
 .slideContainer {
   margin-left: 35%;
   margin-top: 30px;
@@ -89,6 +92,7 @@ p {
   cursor: pointer;
 }
 
+/* styles for sidebar */
 #sidebar {
 	height: 100%;
 	width: 10%;
@@ -115,6 +119,7 @@ p {
   text-align:center;
 }
 
+/* styles for ball list in sidebarn*/
 #ballList {
   text-align: center;
   color: black;
