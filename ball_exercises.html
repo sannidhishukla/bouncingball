@@ -17,7 +17,7 @@
 
 <!-- setting up the canvas, describing its size -->
 <canvas id="myCanvas" width="480" height="320"></canvas>
-<button id="pauseButton" class="button" onclick="changeBallMovement()">⏸️‍</button>
+<button id="pauseButton" class="button" onclick="ballPlayPause()">⏸️‍</button>
 <button class="button" onclick="addBall()">🤹🏾‍</button>
 
 <div class="slideContainer">
@@ -39,9 +39,9 @@
     // defining the balls' radius
     var ballRadius = 10;
 
-    // defining the balls' initial speeds
-    var dxOrig = 5;
-    var dyOrig = -5;
+    // defining the balls' current initial speeds
+    var dxCurrent = 5;
+    var dyCurrent = 5;
 
     // setting up the slider
     var slider = document.getElementById("speedSlider");
@@ -71,8 +71,8 @@
     function addBall() {
       var ball = {
         color: '#'+Math.floor(Math.random()*16777215).toString(16),
-        dx: dxOrig,
-        dy: dyOrig,
+        dx: dxCurrent,
+        dy: dyCurrent,
         x: Math.floor(Math.random() * 10) * Math.floor(Math.random() * 10) + 10,
         y: Math.floor(Math.random() * 10) * Math.floor(Math.random() * 10) + 10,
       };
@@ -108,7 +108,7 @@
     draw();
 
     // function to pause and restart ball Movement
-    function changeBallMovement() {
+    function ballPlayPause() {
       if (isDrawingLoopPaused) {
         isDrawingLoopPaused = false;
         document.getElementById("pauseButton").textContent = "⏸️";
@@ -125,19 +125,19 @@
       // changing the speed of existing balls
       balls.forEach(function(ball) {
         if (ball.dx > 0) {
-          ball.dx = parseInt(speed);
+          ball.dx = +speed;
         } else {
-          ball.dx = -parseInt(speed);
+          ball.dx = -speed;
         }
         if (ball.dy > 0) {
-          ball.dy = parseInt(speed);
+          ball.dy = +speed;
         } else {
-          ball.dy = -parseInt(speed);
+          ball.dy = -speed;
         }
       })
       // changing the speed of balls to be added later
-      dxOrig = parseInt(speed);
-      dyOrig = parseInt(speed);
+      dxCurrent = +speed;
+      dycurrent = +speed;
     }
 
   </script>
