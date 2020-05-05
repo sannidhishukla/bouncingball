@@ -6,25 +6,32 @@
   <meta charset="utf-8" />
   <link rel="stylesheet" type="text/css" href="assets/css/style.css"/>
 
-
   <title> Ball Exercises </title>
-  <link rel="stylesheet" type="text/css" href="assets/css/style.css">
 
 </head>
 
 <body>
 
+  <div id="sidebar">
+    <div id="listContainer">
+      <div id="list-title"> Balls </div>
+      <div id="ballList"></div>
+    </div>
+  </div>
 
 <!-- setting up the canvas, describing its size -->
 <canvas id="myCanvas" width="480" height="320"></canvas>
-<button id="pauseButton" class="button" onclick="ballPlayPause()">⏸️‍</button>
-<button class="button" onclick="addBall()">🤹🏾‍</button>
 
-<div class="slideContainer">
-  <input type="range" min="1" max="10" value="5" class="slider" id="speedSlider">
-  <p>Speed: <span id="speed"></span></p>
+<!-- setting up buttons -->
+<div class ="buttonContainer">
+  <button id="addButton" class="button" onclick="addBall()">🤹🏾‍</button>
+  <button id="playPauseButton" class="button" onclick="ballPlayPause()">⏸️‍</button>
 </div>
 
+<div class="slideContainer">
+  <input type="range" min="0" max="10" value="5" class="slider" id="speedSlider">
+  <p>Speed: <span id="speed"></span></p>
+</div>
 
 <script>
     // storing a reference to the canvas element under the name "canvas"
@@ -34,6 +41,7 @@
     // this is what will actually "paint" on the "canvas"
     var ctx = canvas.getContext("2d");
 
+    // array of balls + list of ball HTML element
     var balls = [];
 
     // defining the balls' radius
@@ -78,6 +86,22 @@
         y: Math.floor(Math.random() * 10) * Math.floor(Math.random() * 10) + 10,
       };
       balls.push(ball);
+
+      // adding balls to html / sidebar. setting up click on delete.
+      var ballNode = document.createElement("button");
+      ballNode.style.backgroundColor = ball.color;
+      ballNode.setAttribute("class", "ball");
+      ballNode.addEventListener("click", deleteBall);
+      document.getElementById('ballList').appendChild(ballNode);
+    }
+
+    // function to delete a ball on click
+    function deleteBall(event) {
+      var ballList = document.getElementById("ballList");
+      var target = event.target;
+      var indexToDelete = Array.prototype.indexOf.call(ballList.childNodes, target);
+      balls.splice(indexToDelete, 1);
+      ballList.removeChild(ballList.childNodes[indexToDelete]);
     }
 
     // define the function that will update the canvas:
@@ -112,11 +136,11 @@
     function ballPlayPause() {
       if (isDrawingLoopPaused) {
         isDrawingLoopPaused = false;
-        document.getElementById("pauseButton").textContent = "⏸️";
+        document.getElementById("playPauseButton").textContent = "⏸️";
 
       } else {
         isDrawingLoopPaused = true;
-        document.getElementById("pauseButton").textContent = "▶️";
+        document.getElementById("playPauseButton").textContent = "▶️";
       }
     }
 
@@ -138,7 +162,7 @@
       })
       // changing the speed of balls to be added later
       dxCurrent = +speed;
-      dycurrent = +speed;
+      dyCurrent = +speed;
     }
 
   </script>
