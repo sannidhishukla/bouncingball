@@ -30,7 +30,7 @@
 
 <div class="slideContainer">
   <input type="range" min="0" max="10" value="5" class="slider" id="speedSlider">
-  <p>Speed: <span id="speed"></span></p>
+  <p>Speed: <span id="speed">5</span></p>
 </div>
 
 
@@ -52,16 +52,6 @@
     var dxCurrent = 5;
     var dyCurrent = 5;
 
-    // setting up the slider
-    var slider = document.getElementById("speedSlider");
-    var output = document.getElementById("speed");
-    output.innerHTML = slider.value;
-    slider.oninput = adjustBallSpeed;
-
-    // setting up the buttons
-    var playPauseButton = document.querySelector("#playPauseButton")
-    var addBallsButton = document.querySelector("#addBallsButton")
-
     // pause/play button
     var isDrawingLoopPaused = false;
 
@@ -79,34 +69,6 @@
       ctx.fill();
       // end of instructions for drawing the circle
       ctx.closePath();
-    }
-
-    // function to add new ball
-    addBallsButton.onclick = function() {
-      var ball = {
-        color: '#'+Math.floor(Math.random()*16777215).toString(16),
-        dx: dxCurrent,
-        dy: dyCurrent,
-        x: Math.floor(Math.random() * 10) * Math.floor(Math.random() * 10) + 10,
-        y: Math.floor(Math.random() * 10) * Math.floor(Math.random() * 10) + 10,
-      };
-      balls.push(ball);
-
-      // adding balls to html / sidebar. setting up click on delete.
-      var ballNode = document.createElement("button");
-      ballNode.style.backgroundColor = ball.color;
-      ballNode.setAttribute("class", "ball");
-      ballNode.addEventListener("click", deleteBall);
-      document.getElementById('ballList').appendChild(ballNode);
-    }
-
-    // function to delete a ball on click
-    function deleteBall(event) {
-      var ballList = document.getElementById("ballList");
-      var target = event.target;
-      var indexToDelete = Array.prototype.indexOf.call(ballList.childNodes, target);
-      balls.splice(indexToDelete, 1);
-      ballList.removeChild(ballList.childNodes[indexToDelete]);
     }
 
     // define the function that will update the canvas:
@@ -137,38 +99,67 @@
 
     draw();
 
-    // function to pause and restart ball Movement
-    playPauseButton.onclick = function() {
-      if (isDrawingLoopPaused) {
-        isDrawingLoopPaused = false;
-        document.getElementById("playPauseButton").textContent = "⏸️";
-
-      } else {
-        isDrawingLoopPaused = true;
-        document.getElementById("playPauseButton").textContent = "▶️";
-      }
-    }
-
-    function adjustBallSpeed() {
-      speed = this.value;
-      output.textContent = this.value;
-      // changing the speed of existing balls
-      balls.forEach(function(ball) {
-        if (ball.dx > 0) {
-          ball.dx = +speed;
+    $(document).ready(function() {
+      // function to pause and restart ball movement
+      $("#playPauseButton").click(function() {
+        if (isDrawingLoopPaused) {
+          isDrawingLoopPaused = false;
+          $(this).text("⏸️");
         } else {
-          ball.dx = -speed;
+          isDrawingLoopPaused = true;
+          $(this).text("▶️");
         }
-        if (ball.dy > 0) {
-          ball.dy = +speed;
-        } else {
-          ball.dy = -speed;
-        }
-      })
-      // changing the speed of balls to be added later
-      dxCurrent = +speed;
-      dyCurrent = +speed;
-    }
+      });
+
+      // function to add balls
+      $("#addBallsButton").click(function() {
+        var ball = {
+          color: '#'+Math.floor(Math.random()*16777215).toString(16),
+          dx: dxCurrent,
+          dy: dyCurrent,
+          x: Math.floor(Math.random() * 10) * Math.floor(Math.random() * 10) + 10,
+          y: Math.floor(Math.random() * 10) * Math.floor(Math.random() * 10) + 10,
+        };
+        balls.push(ball);
+
+        var ballNode = $("<button></button>").css("backgroundColor", ball.color).attr("class", "ball");
+        $("#ballList").append(ballNode);
+
+        // function to delete balls
+        $(".ball").click(function() {
+          var indexToDelete = $(".ball").index(this)
+          if (indexToDelete >= 0) {
+            balls.splice(indexToDelete, 1)
+            $(this).remove()
+          }
+        });
+      });
+
+      // function to adjust ball speed
+      var slider = $("#speedSlider")
+      var output = $("#speed")
+      output.html(slider.value)
+      slider.on("input", function() {
+        speed = this.value
+        $("#speed").text(this.value)
+
+        // changing the speed of existing balls
+        balls.forEach(function(ball) {
+          if (ball.dx > 0) {
+            ball.dx = +speed
+          } else {
+            ball.dx = -speed
+          }
+          if (ball.dy > 0) {
+            ball.dy = +speed
+          } else {
+            ball.dy = -speed
+          }
+        })
+        dxCurrent = +speed
+        dyCurrent = +speed
+      });
+    });
 
   </script>
 
