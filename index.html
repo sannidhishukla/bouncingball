@@ -1,256 +1,164 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <!-- tells the browser to use the utf-8 character encoding -->
   <meta charset="utf-8" />
-
-  <title>
-    Gamedev Canvas Workshop
-  </title>
-
-  <style>
-  2* {
-    padding: 0;
-    margin: 0;
-   }
-   canvas {
-     background: #eee;
-     display: block;
-     margin: 0 auto;
-   }
-  </style>
+  <link rel="stylesheet" type="text/css" href="assets/css/style.css"/>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <title> Ball Exercises </title>
 
 </head>
 
 <body>
 
-  <!-- setting up the canvas, describing its size -->
-  <canvas id="myCanvas" width="480" height="320"></canvas>
+  <div id="sidebar">
+    <div id="listContainer">
+      <div id="list-title"> Balls </div>
+      <div id="ballList"></div>
+    </div>
+  </div>
 
-  <script>
+<!-- setting up the canvas, describing its size -->
+<canvas id="myCanvas" width="480" height="320"></canvas>
+
+<!-- setting up buttons -->
+<div class ="buttonContainer">
+  <button id="addBallsButton" class="button">🤹🏾‍</button>
+  <button id="playPauseButton" class="button">⏸️‍</button>
+</div>
+
+<div class="slideContainer">
+  <input type="range" min="0" max="10" value="5" class="slider" id="speedSlider">
+  <p>Speed: <span id="speed">5</span></p>
+</div>
+
+<script>
     // storing a reference to the canvas element under the name "canvas"
     var canvas = document.getElementById("myCanvas");
 
-    // creating ctx variable to store the 2d rendering context.
+    // creating the ctx variable to store the 2d rendering context.
     // this is what will actually "paint" on the "canvas"
     var ctx = canvas.getContext("2d");
 
-    // starting x and y position of the ball on the canvas
-    var ballX = canvas.width/2;
-    var ballY = canvas.height - 30;
+    // array of balls + list of ball HTML element
+    var balls = [];
 
-    // defining the increments by which the x and y position of the ball will change
-    var dx = 2;
-    var dy = -2;
-
-    // defining the ball's radius
+    // defining the balls' radius
     var ballRadius = 10;
 
-    // defining a paddle to hit the ball
-    var paddleHeight = 10;
-    var paddleWidth = 75;
-    var paddleX = (canvas.width - paddleWidth) / 2
+    // defining the balls' current initial speeds
+    var dxCurrent = 5;
+    var dyCurrent = 5;
 
-    // variables that will keep track of if a user if moving the paddle
-    var leftPressed = false;
-    var rightPressed = false;
+    // pause/play button
+    var isDrawingLoopPaused = false;
 
-    // setting up the game's bricks
-    var brickRowCount = 3;
-    var brickColumnCount = 5;
-    var brickWidth = 75;
-    var brickHeight = 20;
-    var brickPadding = 10;
-    var brickOffsetTop = 30;
-    var brickOffsetLeft = 30;
-
-    // setting the score
-    var score = 0;
-
-    // setting up lives
-    var lives = 3;
-
-    var bricks = [];
-    for (var col = 0; col < brickColumnCount; col += 1) {
-      bricks[col] = [];
-      for (var row = 0; row < brickRowCount; row += 1) {
-        bricks[col][row] = { x: 0, y: 0, status: 1};
-      }
-    }
-
-    // define the function that will draw the ball initially:
-    function drawBall() {
+    // function to draw a ball
+    function drawBall(color, x, y) {
       // begin the instructions for drawing the ball
       ctx.beginPath();
       // (x, y) coordinates for the circle's center,
       // arc radius, start and end angle (in radians),
       // direction to draw the circle in ("false" indicates clockwise)
-      ctx.arc(ballX,ballY,ballRadius,0,Math.PI*2,false);
+      ctx.arc(x,y,ballRadius,0,Math.PI*2,false);
       // define the ball's color
-      ctx.fillStyle = "#0095DD";
+      ctx.fillStyle = color;
       // define the circle's fill pattern
       ctx.fill();
       // end of instructions for drawing the circle
       ctx.closePath();
     }
 
-    // define the function that will draw the paddle initially
-    function drawPaddle() {
-      ctx.beginPath();
-      ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
-      ctx.fillStyle = "#0095DD";
-      ctx.fill();
-      ctx.closePath();
-    }
-
-    // define the function that will draw the bricks initially
-    function drawBricks() {
-      for (var col = 0; col < brickColumnCount; col += 1) {
-        for (var row = 0; row < brickRowCount; row += 1) {
-          if (bricks[col][row].status == 1) {
-            var brickX = (col*(brickWidth+brickPadding))+brickOffsetLeft;
-            var brickY = (row*(brickHeight+brickPadding))+brickOffsetTop;
-            bricks[col][row].x = brickX;
-            bricks[col][row].y = brickY;
-            ctx.beginPath();
-            ctx.rect(brickX, brickY, brickWidth, brickHeight);
-            ctx.fillStyle = "#0095DD";
-            ctx.fill();
-            ctx.closePath();
-          }
-        }
-      }
-    }
-
-    // the box that will contain the score
-    function drawScore() {
-      ctx.font = "16px Arial";
-      ctx.fillStyle = "#0095DD";
-      ctx.fillText("Score: " + score, 8, 20);
-    }
-
-    // the box that will contain lives
-    function drawLives() {
-      ctx.font = "16px Arial";
-      ctx.fillStyle = "#0095DD";
-      ctx.fillText("Lives: "+lives, canvas.width-65, 20);
-    }
-
     // define the function that will update the canvas:
     function draw() {
       // clear the canvas before redrawing
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      // draw the ball
-      drawBall();
-      // draw the paddle
-      drawPaddle();
-      // draw the score box
-      drawScore();
-      // draw the lives box
-      drawLives();
-      // remove bricks when the ball collides with them
-      collisionDetection();
-      // draw the bricks
-      drawBricks();
-      // update the ball's x and y position
-      ballX += dx;
-      ballY += dy;
 
-      // making sure that balls bounce off the top, left, and right walls,
-      // that the ball is able to bounce off the paddle, and
-      // that a "GAME OVER" alert is sent when a ball leaves through the
-      // bottom of the screen.
-      if (ballY + dy < ballRadius) {
-        dy = -dy;
-      } else if (ballY + dy > (canvas.height - ballRadius)) {
-        if (ballX > paddleX && ballX < paddleX + paddleWidth) {
-          dy = -dy
-        } else {
-          lives -= 1;
-          if(!lives) {
-            alert("GAME OVER");
-            document.location.reload();
-          }
-          else {
-            x = canvas.width/2;
-            y = canvas.height-30;
-            dx = 2;
-            dy = -2;
-            paddleX = (canvas.width-paddleWidth)/2;
-          }
-        }
-      }
-      if (ballX + dx < ballRadius || ballX + dx > (canvas.width - ballRadius))  {
-        dx = -dx;
-      }
+      // draw the balls
+      balls.forEach(function(ball) {
+        drawBall(ball.color, ball.x, ball.y);
 
-      // updating the paddle's position given user input
-      if (rightPressed) {
-        paddleX += 7;
-        if (paddleX + paddleWidth > canvas.width) {
-          paddleX = canvas.width - paddleWidth;
+        if (!isDrawingLoopPaused) {
+          ball.x += ball.dx;
+          ball.y += ball.dy;
         }
-      } else if (leftPressed) {
-        paddleX -= 7;
-        if (paddleX < 0) {
-          paddleX = 0;
+
+        if (ball.y + ball.dy < ballRadius || ball.y + ball.dy > (canvas.height - ballRadius)) {
+          ball.dy = -ball.dy;
         }
-      }
+        if (ball.x + ball.dx < ballRadius || ball.x + ball.dx > (canvas.width - ballRadius))  {
+          ball.dx = -ball.dx;
+        }
+      })
+
+      // smooth ball moving animation
       requestAnimationFrame(draw);
     }
 
-    // this line says to reexecute the code within the draw function every 10 milliseconds
     draw();
 
-    // setting listeners to execute the appropriate functions given user input
-    document.addEventListener("keyup", keyUpHandler, false);
-    document.addEventListener("keydown", keyDownHandler, false);
-    document.addEventListener("mousemove", mouseMoveHandler, false);
-
-    function collisionDetection() {
-      for (var col = 0; col < brickColumnCount; col += 1) {
-        for (var row = 0; row < brickRowCount; row += 1) {
-          var b = bricks[col][row];
-          if (b.status == 1) {
-              if (ballX > b.x && ballX < (b.x + brickWidth) && ballY > b.y && ballY < (b.y + brickHeight)) {
-                dy = -dy;
-                b.status = 0;
-                score += 1;
-                if (score == brickRowCount * brickColumnCount) {
-                  alert("Congrats! You won!");
-                  document.location.reload();
-                }
-            }
-          }
+    $(document).ready(function() {
+      // function to pause and restart ball movement
+      $("#playPauseButton").click(function() {
+        if (isDrawingLoopPaused) {
+          isDrawingLoopPaused = false;
+          $(this).text("⏸️");
+        } else {
+          isDrawingLoopPaused = true;
+          $(this).text("▶️");
         }
-      }
-    }
+      });
 
-    // reset rightPressed / leftPressed to false when keys are no longer pressed
-    function keyUpHandler(e) {
-      if (e.key == "Right" || e.key == "ArrowRight") {
-        rightPressed = false;
-      } if (e.key = "Left" || e.key == "ArrowLeft") {
-        leftPressed = false;
-      }
-    }
+      // function to add balls
+      $("#addBallsButton").click(function() {
+        var ball = {
+          color: '#'+Math.floor(Math.random()*16777215).toString(16),
+          dx: dxCurrent,
+          dy: dyCurrent,
+          x: Math.floor(Math.random() * 10) * Math.floor(Math.random() * 10) + 10,
+          y: Math.floor(Math.random() * 10) * Math.floor(Math.random() * 10) + 10,
+        };
+        balls.push(ball);
 
-    // set rightPressed / leftPressed to true when keys are pressed
-    function keyDownHandler(e) {
-      if (e.key == "Right" || e.key == "ArrowRight") {
-        rightPressed = true;
-      } if (e.key = "Left" || e.key == "ArrowLeft") {
-        leftPressed = true;
-      }
-    }
+        var ballNode = $("<button></button>").css("backgroundColor", ball.color).attr("class", "ball");
+        $("#ballList").append(ballNode);
 
-    function mouseMoveHandler(e) {
-      var relativeX = e.clientX - canvas.offsetLeft;
-      if (relativeX > 0 && relativeX < canvas.width) {
-          paddleX = relativeX - paddleWidth / 2;
-      }
-    }
+        // function to delete balls
+        $(".ball").click(function() {
+          var indexToDelete = $(".ball").index(this)
+          if (indexToDelete >= 0) {
+            balls.splice(indexToDelete, 1)
+            $(this).remove()
+          }
+        });
+      });
 
+      // function to adjust ball speed
+      var slider = $("#speedSlider")
+      var output = $("#speed")
+      output.html(slider.value)
+      slider.on("input", function() {
+        speed = this.value
+        $("#speed").text(this.value)
+
+        // changing the speed of existing balls
+        balls.forEach(function(ball) {
+          if (ball.dx > 0) {
+            ball.dx = +speed
+          } else {
+            ball.dx = -speed
+          }
+          if (ball.dy > 0) {
+            ball.dy = +speed
+          } else {
+            ball.dy = -speed
+          }
+        })
+        dxCurrent = +speed
+        dyCurrent = +speed
+      });
+    });
   </script>
 
 </body>
